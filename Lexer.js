@@ -1,17 +1,9 @@
 import pkg from 'voca';
-const { isDigit } = pkg;
+const { isDigit, isAlphaDigit, isAlpha, isBlank } = pkg;
 
 import {TokenTypes} from "./TokenTypes.js";
+import { Token } from "./Token.js";
 
-class Token {
-	constructor(type, value, line, column)
-	{
-		this.value = value;
-		this.type = type;
-		this.line = line;
-		this.column = column;
-	}
-}
 
 class Lexer {
 	line = 1;
@@ -37,12 +29,19 @@ class Lexer {
 				case "+": this.addToken(TokenTypes.PLUS, token); break;
 				case "*": this.addToken(TokenTypes.MUL, token); break;
 				case "/": this.addToken(TokenTypes.DIV, token); break;
+				case "^": this.addToken(TokenTypes.POW, token); break;
+				case "=": this.addToken(TokenTypes.ASSIGN, token); break;
+				case ";": this.addToken(TokenTypes.SEMICOLON, token); break;
 					default:
 					  if (isDigit(token))
 							{
 								this.number()
 							}
-					else console.log(`unexpected token '${token}'`);
+					  else if(isAlpha(token))
+						{
+							this.identifier();
+						}
+						else console.log(`unexpected token '${token}'`);
 					break;
 			}
 
@@ -71,9 +70,21 @@ class Lexer {
 			TokenTypes.NUMBER, token, this.line, column));
 	}
 
+	identifier()
+	{
+		const start = this.current;
+		const column = this.column;
+
+		while (this.isVar(this.peek())) this.advance();
+
+		const token = this.input.substring(start - 1, this.current);
+
+		this.tokens.push(new Token(TokenTypes.IDENTIFIER, token, this.line, column));
+	}
+
 	skipSpace()
 	{
-		while ([" ", "\n", "\t", "\r"].indexOf(this.peek()) >= 0) this.advance();
+		while (isBlank(this.peek())) this.advance();
 	}
 
 	advance()
@@ -102,8 +113,10 @@ class Lexer {
 
 	isVar(c)
 	{
-		return isAlphaNumeric(c);
+		return isAlphaDigit(c) || c == "_";
 	}
 }
 
-console.log(new Lexer("34 * 5 + 5.9 - 56.6 / 45").tokenize())
+export { Lexer };
+
+//console.log(new Lexer("34 * 5 + 5.9 - 56.6 / 45 + my_name;").tokenize().map(token=>token.toString() + ""))

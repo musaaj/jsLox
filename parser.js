@@ -1,3 +1,6 @@
+import { TokenTypes } from "./TokenTypes.js";
+import { Lexer } from "./Lexer.js";
+
 class Parser {
 	tokens = [];
 	current = 0;
@@ -6,30 +9,24 @@ class Parser {
 		this.tokens = tokens;
 	}
 
-	expression()
+	statement()
 	{
-		return this.comparison();
+		return this.expr();
 	}
 
-	comparison()
+	expr()
 	{
 		let expr = this.factor();
-		while(["<", ">", ">=","<=", "!=", "=="].indexOf(this.peek()) >= 0)
-		{
-			let ops = this.advance()
-			const right = this.factor();
-			expr = new Binary(expr, ops, right); 
-		}
 		return expr;
 	}
 
 	factor()
 	{
 		let expr = this.term();
-		while(this.peek() == "+" || this.peek() == "-"){
+		while(!this.eof() && this.match(TokenTypes.PLUS, TokenTypes.MINUS)){
 			let ops = this.advance();
 			const right = this.term()
-			expr = new Binary(expr, ops, right);
+			expr = new Binary(expr, ops, right, ops.line, ops.column);
 		}
 
 		return expr;
@@ -38,24 +35,45 @@ class Parser {
 	term()
 	{
 		let exp = this.terminal();
-		while(this.peek() == "/" || this.peek() == "*")
+		while(!this.eof() && this.match(TokenTypes.MUL, TokenTypes.DIV))
 		{
 			let ops = this.advance();
 			const right = this.terminal();
-			exp = new Binary(exp, ops, right);
+			exp = new Binary(exp, ops, right, ops.line, ops.column);
 		}
 		return exp;
 	}
 
 	terminal()
 	{
-		return new Value(this.advance());
+		let terminal = this.advance()
+		if (!terminal) return null;
+		return new Terminal(
+			terminal.type, terminal.value,
+			terminal.line, terminal.column
+		);
 	}
 
 	advance()
 	{
 		if (this.eof()) return null;
 		return this.tokens[this.current++];
+	}
+
+	match(tokenTypes)
+	{
+		if (this.eof()) return false;
+		for (let i = 0; i < arguments.length; i++)
+		{
+			if (this.check(arguments[i])) return true;
+		}
+		return false;
+	}
+
+	check(tokenType)
+	{
+		if (this.eof()) return false;
+		return this.peek().type == tokenType;
 	}
 
 	peek()
@@ -70,54 +88,30 @@ class Parser {
 }
 
 class Binary {
-	constructor(left, ops, right)
+	constructor(left, ops, right, line, column)
 	{
 		this.left = left;
 		this.ops = ops;
 		this.right = right;
-	}
-
-	toString()
-	{
-		return `(${this.ops} ${this.left.toString()} ${this.right.toString()})`;
-	}
-
-	interprete()
-	{
-		switch(this.ops)
-		{
-			case "+":
-				return this.left.interprete() + this.right.interprete();
-			case "-":
-				return this.left.interprete() - this.right.interprete();
-			case "*":
-				return this.left.interprete() * this.right.interprete();
-			case "/":
-				return this.left.interprete() / this.right.interprete();
-		  case "==":
-				return this.left.interprete() == this.right.interprete();
-		}
+		this.line = line;
+		this.column = column;
 	}
 }
 
-class Value {
-	constructor(val)
+class Terminal {
+	constructor(type, value, line, column)
 	{
-		this.val = val;
-	}
-
-	interprete()
-	{
-		return this.val;
-	}
-
-	toString()
-	{
-		return this.val.toString();
+		this.type = type;
+		this.value = value;
+		this.line = line;
+		this.column = column
 	}
 }
 
-let ps = new Parser([2, "+", 3, "+", 3, "==", 4, "/", 5]);
+class Statement extends Binary{
+}
 
-let expr = ps.expression()
-console.log(expr.toString(), expr.interprete());
+
+let ps = new Parser(new Lexer("9 - 5 * 3 / 6 + 4").tokenize());
+let expr = ps.statement()
+console.log(expr);
