@@ -108,7 +108,4 @@ class Parser {
 	}
 }
 
-
-let ps = new Parser(new Lexer("my_number = 5 - 4 * 3 ^ 8").tokenize());
-let expr = ps.statement()
-console.log(JSON.stringify(expr, null, 2));
+export { Parser };

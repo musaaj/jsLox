@@ -25,7 +25,7 @@ class Terminal {
 
 	accept(visitor)
 	{
-		visitor.visitTerminal();
+		return visitor.visitTerminal(this);
 	}
 }
 
@@ -33,7 +33,7 @@ class Statement extends Binary{
 
 	accept(visitor)
 	{
-		visitor.visitorStatement();
+		return visitor.visitStatement(this);
 	}
 }
 
