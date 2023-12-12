@@ -1,5 +1,6 @@
 import { TokenTypes } from "./TokenTypes.js";
 import { Lexer } from "./Lexer.js";
+import { Binary, Statement, Terminal } from "./Expr.js";
 
 class Parser {
 	tokens = [];
@@ -11,13 +12,20 @@ class Parser {
 
 	statement()
 	{
-		return this.expr();
+		let expr = this.factor();
+
+		while (!this.eof() && this.match(TokenTypes.ASSIGN))
+		{
+			let ops = this.advance();
+			expr = new Statement(expr, ops, this.factor(), ops.line, ops.column);
+		}
+
+		return expr;
 	}
 
-	expr()
+	expression()
 	{
-		let expr = this.factor();
-		return expr;
+		return this.factor();
 	}
 
 	factor()
@@ -34,14 +42,27 @@ class Parser {
 
 	term()
 	{
-		let exp = this.terminal();
+		let expr = this.power();
 		while(!this.eof() && this.match(TokenTypes.MUL, TokenTypes.DIV))
 		{
 			let ops = this.advance();
-			const right = this.terminal();
-			exp = new Binary(exp, ops, right, ops.line, ops.column);
+			const right = this.power();
+			expr = new Binary(expr, ops, right, ops.line, ops.column);
 		}
-		return exp;
+		return expr;
+	}
+
+	power()
+	{
+		let expr = this.terminal();
+
+		while (!this.eof() && this.match(TokenTypes.POW))
+		{
+			let ops = this.advance();
+			expr = new Binary(expr, ops, this.power(), ops.line, ops.column);
+		}
+
+		return expr;
 	}
 
 	terminal()
@@ -60,7 +81,7 @@ class Parser {
 		return this.tokens[this.current++];
 	}
 
-	match(tokenTypes)
+	match()
 	{
 		if (this.eof()) return false;
 		for (let i = 0; i < arguments.length; i++)
@@ -87,31 +108,7 @@ class Parser {
 	}
 }
 
-class Binary {
-	constructor(left, ops, right, line, column)
-	{
-		this.left = left;
-		this.ops = ops;
-		this.right = right;
-		this.line = line;
-		this.column = column;
-	}
-}
 
-class Terminal {
-	constructor(type, value, line, column)
-	{
-		this.type = type;
-		this.value = value;
-		this.line = line;
-		this.column = column
-	}
-}
-
-class Statement extends Binary{
-}
-
-
-let ps = new Parser(new Lexer("9 - 5 * 3 / 6 + 4").tokenize());
+let ps = new Parser(new Lexer("my_number = 5 - 4 * 3 ^ 8").tokenize());
 let expr = ps.statement()
-console.log(expr);
+console.log(JSON.stringify(expr, null, 2));
