@@ -5,11 +5,19 @@
   "main": "parser.js",
   "type": "module",
   "scripts": {
+		"format": "npx prettier *.js --write --single-quote --tab-width 2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "prettier": "^3.1.1",
+    "readline-sync": "^1.4.10",
     "voca": "^1.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1"
   }
 }

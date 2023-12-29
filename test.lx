@@ -1,0 +1,12 @@
+fun power(base, expo) {
+  if (expo == 1) return base;
+  return base * power(base, expo - 1);
+}
+
+print(power(2, 12));
+
+fun random(seed){
+  return seed >> 1 / 2 + seed << 1;
+}
+
+print(random(2));

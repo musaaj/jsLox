@@ -1,16 +1,21 @@
-let TokenTypes =(function(TokenType = [])
-{
-	TokenType[TokenType["PLUS"]  = 0] = "PLUS";
-	TokenType[TokenType["MINUS"]  = 1] = "MINUS";
-	TokenType[TokenType["MUL"]  = 2] = "MUL";
-	TokenType[TokenType["DIV"]  = 3] = "DIV";
-	TokenType[TokenType["POW"]  = 4] = "POW";
-	TokenType[TokenType["NUMBER"] = 5] = "NUMBER";
-	TokenType[TokenType["IDENTIFIER"] = 6] = "IDENTIFIER";
-	TokenType[TokenType["ASSIGN"] = 7] = "ASSIGN";
-	TokenType[TokenType["SEMICOLON"] = 7] = "SEMICOLON";
+import { Enum } from './enum.js';
 
-	return TokenType;
-}());
+const TokenTypes = Enum(
+  `NUMBER, IDENTIFIER, STRING, LET, NIL,
+	
+	SEMICOLON, ARROW, COMMA, DOT, COLON,
 
-export {TokenTypes};
+	EQUAL_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL,
+
+	BITWISE_AND, BITWISE_OR, BITWISE_LSHIFT, BITWISE_RSHIFT,
+
+	AND, OR,
+	
+	PLUS, MINUS, MUL, DIV, POW, ASSIGN,
+
+	LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
+
+	FUN, CLASS, EXTENDS, RETURN, IF, ELSE, WHILE, BREAK, CONTINUE, FOR`,
+);
+
+export { TokenTypes };
