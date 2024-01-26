@@ -22,7 +22,6 @@ class Lox {
         const tokens = new Lexer(args).tokenize();
         let ast;
         if (!Lox.hasError) ast = new Parser(tokens).statement();
-        console.log(ast);
 
         if (!Lox.hasError) {
           interpreter.interprete(ast);
@@ -54,7 +53,7 @@ class Lox {
 
   static error(msg, line, column) {
     this.hasError = true;
-    console.log(`Error: ${line} : ${column}; ${msg}`);
+    console.log(`Error: ${line} : ${column} ${msg}`);
   }
 }
 

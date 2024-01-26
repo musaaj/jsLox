@@ -74,6 +74,9 @@ class Lexer {
         case ',':
           this.addToken(TokenTypes.COMMA, token);
           break;
+				case "#":
+					this.skipComment();
+					break;
         case '"':
           this.string();
           break;
@@ -222,6 +225,10 @@ class Lexer {
   skipSpace() {
     while (isBlank(this.peek())) this.advance();
   }
+
+	skipComment(){
+			while (this.peek() != "\n") this.advance();
+	}
 
   advance() {
     const c = this.input[this.current];

@@ -269,6 +269,7 @@ class Interpreter {
     if (value === Infinity || value === -Infinity) console.log('nil');
     else if (value === false) console.log(value);
     else if (value == null) console.log('nil');
+		else if (value instanceof LoxFun) console.log(value.toString());
     else console.log(value);
   }
 }

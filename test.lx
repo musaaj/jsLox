@@ -3,10 +3,23 @@ fun power(base, expo) {
   return base * power(base, expo - 1);
 }
 
-print(power(2, 12));
+print(power(2, 16));
+# this is a comment
+# another comment
+
 
 fun random(seed){
-  return seed >> 1 / 2 + seed << 1;
+  return seed << 16.4;
+}
+let x = 2;
+
+print(random(1));
+print(random(4));
+print("Hello world");
+
+while (x < 100) {
+	let y = x * x;
+	print(y);
+  x = x + 1;
 }
 
-print(random(2));

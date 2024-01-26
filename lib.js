@@ -21,6 +21,9 @@ const printFun = new LoxFun(
   null,
 );
 
+const randomFun = new LoxFun(new Token(FunTypes.BUILTIN, "random", 0, 0), FunTypes.BUILTIN, Math.random, null, null, null);
+
 env.set('print', printFun);
+env.set("random", randomFun);
 
 export default env;
